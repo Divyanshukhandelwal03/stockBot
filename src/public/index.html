@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Trading Bot</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Stock Trading Bot</h1>
+
+    <div id="loginContainer">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <label for="loginEmail">Email:</label>
+            <input type="email" id="loginEmail" required>
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" required>
+            <button type="submit">Login</button>
+        </form>
+        
+        <h3>Don't have an account? Sign up below:</h3>
+        <form id="signupForm">
+            <label for="signupEmail">Email:</label>
+            <input type="email" id="signupEmail" required>
+            <label for="signupPassword">Password:</label>
+            <input type="password" id="signupPassword" required>
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+
+    <div id="tradingContainer" style="display: none;">
+        <div id="stocks">
+            <h2>Stock Prices</h2>
+            <table id="stockTable">
+                <thead>
+                    <tr>
+                        <th>Stock</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Stock data will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="portfolio">
+            <h2>Portfolio</h2>
+            <p>Balance: $<span id="balance">0</span></p>
+            <table id="portfolioTable">
+                <thead>
+                    <tr>
+                        <th>Stock</th>
+                        <th>Quantity</th>
+                        <th>Buy Price</th>
+                        <th>Current Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Portfolio data will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
