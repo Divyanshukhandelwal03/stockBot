@@ -1,3 +1,4 @@
+
 const express = require('express');
 const session = require('express-session');
 const app = express();
@@ -38,6 +39,9 @@ function updateStockPrices() {
 // Update stock prices every 5 seconds
 setInterval(updateStockPrices, 5000);
 
+app.get("/",(req,res)=>{
+    res.render(index.html);
+})
 // Signup route
 app.post('/api/signup', (req, res) => {
     const { email, password } = req.body;
@@ -155,3 +159,4 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
 //
+

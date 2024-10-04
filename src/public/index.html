@@ -170,6 +170,15 @@
     const loginForm = document.getElementById('loginForm');
     const dashboardSection = document.getElementById('dashboardSection');
     
+
+    signupLink.addEventListener('click',()=>{
+        loginForm.style.display="none"
+        signupForm.style.display="block"
+    })
+    loginLink.addEventListener('click',()=>{
+        loginForm.style.display="block"
+        signupForm.style.display="none"
+    })
     // Example users (hardcoded)
     const users = {
         "user1": { password: "pass1", balance: 1000, portfolio: {} },
