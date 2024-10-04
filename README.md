@@ -18,6 +18,8 @@ This project simulates a basic stock trading bot where users can log in, buy and
 
 
 ## **PROJECT STRUCTURE**
+
+```bash
 trading-bot-backend/
 ├── public/
 │   ├── index.html         # Frontend (Login/Signup UI)
@@ -26,7 +28,7 @@ trading-bot-backend/
 ├── server.js              # Backend logic (Node.js/Express app)
 ├── package.json           # Project dependencies and configuration
 └── README.md              # Project documentation
-
+```
 ## **USAGE**
 Signup
 Navigate to the signup form, create a new account by entering an email and password. The information will be saved on the backend (hardcoded), and the user will be redirected to the login page.
@@ -46,6 +48,7 @@ You can log out by closing the browser, and your session will be cleared.
 
 
 ## **ENDPOINTS**
+```bash
 POST /api/signup: Signup a new user (hardcoded backend users).
 POST /api/login: Log in as a user.
 GET /api/user: Get the current user’s session data (balance, portfolio).
@@ -53,7 +56,7 @@ GET /api/stocks: Get the list of stocks and their prices.
 POST /api/buy: Buy stocks.
 POST /api/sell: Sell stocks.
 POST /api/logout: Log out the user.
-
+```
 
 ## **IMPROVEMENTS AND FUTURE ENHANCEMENTS**
 Integrating an actual database for user management and trading history.
