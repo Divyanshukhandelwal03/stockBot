@@ -1,19 +1,50 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
+    background-color: #f4f4f4;
+    padding: 20px;
 }
 
-h1 {
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
     text-align: center;
 }
 
-#stocks, #portfolio {
-    margin: 20px auto;
-    width: 80%;
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
 }
 
 table {
     width: 100%;
+    margin: 20px 0;
     border-collapse: collapse;
 }
 
@@ -22,14 +53,6 @@ th, td {
     border: 1px solid #ddd;
 }
 
-button {
-    padding: 5px 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-button.sell {
-    background-color: #f44336;
+th {
+    background-color: #f2f2f2;
 }

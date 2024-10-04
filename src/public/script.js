@@ -1,117 +1,198 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const stockTableBody = document.querySelector('#stockTable tbody');
-    const portfolioTableBody = document.querySelector('#portfolioTable tbody');
-    const balanceElement = document.getElementById('balance');
-    const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
-    const loginContainer = document.getElementById('loginContainer');
-    const tradingContainer = document.getElementById('tradingContainer');
+    const loginForm = document.getElementById('loginForm');
+    const stockTable = document.getElementById('stockTable');
+    const portfolioTable = document.getElementById('portfolioTable');
+    const balanceSpan = document.getElementById('balance');
 
-    // Hardcoded users
-    const users = {
-        'john@example.com': { password: '12345', balance: 10000, portfolio: {} },
-        'jane@example.com': { password: '54321', balance: 15000, portfolio: {} }
-    };
-
-    let currentUser = null;  // Holds the currently logged-in user
-
-    // Login functionality
-    loginForm.addEventListener('submit', function (e) {
+    // Show Signup form
+    document.getElementById('showSignup').addEventListener('click', function (e) {
         e.preventDefault();
-        const email = document.getElementById('loginEmail').value;
-        const password = document.getElementById('loginPassword').value;
-
-        if (users[email] && users[email].password === password) {
-            currentUser = users[email];
-            loginContainer.style.display = 'none';
-            tradingContainer.style.display = 'block';
-            updatePortfolio();
-        } else {
-            alert('Invalid email or password!');
-        }
+        document.getElementById('signupContainer').style.display = 'block';
+        document.getElementById('loginContainer').style.display = 'none';
     });
 
-    // Signup functionality (hardcoded, for demonstration purposes)
+    // Show Login form
+    document.getElementById('showLogin').addEventListener('click', function (e) {
+        e.preventDefault();
+        document.getElementById('signupContainer').style.display = 'none';
+        document.getElementById('loginContainer').style.display = 'block';
+    });
+
+    // Signup form submission
     signupForm.addEventListener('submit', function (e) {
         e.preventDefault();
         const email = document.getElementById('signupEmail').value;
         const password = document.getElementById('signupPassword').value;
 
-        if (users[email]) {
-            alert('User already exists!');
-        } else {
-            users[email] = { password, balance: 10000, portfolio: {} };  // Create new user with initial balance
-            alert('Signup successful, please login.');
-        }
+        fetch('/api/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Signup successful! Please log in.');
+                document.getElementById('signupContainer').style.display = 'none';
+                document.getElementById('loginContainer').style.display = 'block';
+            } else {
+                alert(data.message);
+            }
+        });
     });
 
-    // Fetch stock prices and render table
-    const fetchStockPrices = () => {
+    // Login form submission
+    loginForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+
+        fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Login successful!');
+                document.getElementById('loginContainer').style.display = 'none';
+                loadDashboard();
+            } else {
+                alert(data.message);
+            }
+        });
+    });
+
+    // Load dashboard
+    function loadDashboard() {
+        fetch('/api/user')
+            .then(response => response.json())
+            .then(data => {
+                if (data.email) {
+                    document.getElementById('dashboard').style.display = 'block';
+                    balanceSpan.innerText = `$${data.balance}`;
+                    loadStocks();
+                    loadPortfolio(data.portfolio);
+                    // Refresh stock prices every 5 seconds
+                    setInterval(loadStocks, 5000);
+                }
+            });
+    }
+
+    // Load available stocks
+    function loadStocks() {
         fetch('/api/stocks')
             .then(response => response.json())
             .then(data => {
-                stockTableBody.innerHTML = ''; // Clear the table
+                const tbody = stockTable.querySelector('tbody');
+                tbody.innerHTML = ''; // Clear existing rows
                 for (const stock in data) {
-                    const row = document.createElement('tr');
+                    const row = tbody.insertRow();
                     row.innerHTML = `
                         <td>${stock}</td>
-                        <td>${data[stock]}</td>
+                        <td>${data[stock].price}</td>
                         <td>
-                            <button class="buy" onclick="buyStock('${stock}', ${data[stock]})">Buy</button>
-                            <button class="sell" onclick="sellStock('${stock}', ${data[stock]})">Sell</button>
+                            <button class="buy" data-stock="${stock}">Buy</button>
+                            <button class="sell" data-stock="${stock}">Sell</button>
                         </td>
                     `;
-                    stockTableBody.appendChild(row);
                 }
+                addTradeEventListeners();
             });
-    };
+    }
 
-    // Buy stock logic (specific to current user)
-    window.buyStock = (stock, price) => {
-        if (currentUser && currentUser.balance >= price) {
-            if (!currentUser.portfolio[stock]) {
-                currentUser.portfolio[stock] = { quantity: 0, buyPrice: price };
-            }
-            currentUser.portfolio[stock].quantity++;
-            currentUser.portfolio[stock].buyPrice = price;
-            currentUser.balance -= price;
-            updatePortfolio();
-        } else {
-            alert('Not enough balance to buy stock!');
-        }
-    };
-
-    // Sell stock logic (specific to current user)
-    window.sellStock = (stock, price) => {
-        if (currentUser && currentUser.portfolio[stock] && currentUser.portfolio[stock].quantity > 0) {
-            currentUser.portfolio[stock].quantity--;
-            currentUser.balance += price;
-            if (currentUser.portfolio[stock].quantity === 0) {
-                delete currentUser.portfolio[stock]; // Remove stock from portfolio if quantity is 0
-            }
-            updatePortfolio();
-        } else {
-            alert('You don\'t own any shares of this stock!');
-        }
-    };
-
-    // Update portfolio and balance UI
-    const updatePortfolio = () => {
-        portfolioTableBody.innerHTML = '';
-        for (const stock in currentUser.portfolio) {
-            const row = document.createElement('tr');
+    // Load user portfolio
+    function loadPortfolio(portfolio) {
+        const tbody = portfolioTable.querySelector('tbody');
+        tbody.innerHTML = ''; // Clear existing rows
+        for (const stock in portfolio) {
+            const row = tbody.insertRow();
             row.innerHTML = `
                 <td>${stock}</td>
-                <td>${currentUser.portfolio[stock].quantity}</td>
-                <td>${currentUser.portfolio[stock].buyPrice}</td>
-                <td>${currentUser.portfolio[stock].buyPrice}</td> <!-- For now, use buyPrice as current price -->
+                <td>${portfolio[stock].quantity}</td>
+                <td>${portfolio[stock].buyPrice}</td>
             `;
-            portfolioTableBody.appendChild(row);
         }
-        balanceElement.textContent = currentUser.balance.toFixed(2);
-    };
+    }
 
-    // Periodically fetch stock prices every 5 seconds
-    setInterval(fetchStockPrices, 5000);
-    fetchStockPrices(); // Initial fetch
+    // Add buy/sell event listeners
+    function addTradeEventListeners() {
+        const buyButtons = document.querySelectorAll('.buy');
+        const sellButtons = document.querySelectorAll('.sell');
+
+        buyButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const stock = this.dataset.stock;
+                const quantity = prompt(`How many shares of ${stock} would you like to buy?`);
+                if (quantity) {
+                    fetch('/api/buy', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ stock, quantity: Number(quantity) })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            balanceSpan.innerText = `$${data.balance}`;
+                            loadPortfolio(data.portfolio);
+                        } else {
+                            alert(data.message);
+                        }
+                    });
+                }
+            });
+        });
+
+        sellButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const stock = this.dataset.stock;
+                const quantity = prompt(`How many shares of ${stock} would you like to sell?`);
+                if (quantity) {
+                    fetch('/api/sell', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ stock, quantity: Number(quantity) })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            balanceSpan.innerText = `$${data.balance}`;
+                            loadPortfolio(data.portfolio);
+                        } else {
+                            alert(data.message);
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    // Logout functionality
+    document.getElementById('logoutButton').addEventListener('click', function () {
+        fetch('/api/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Logout successful');
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('signupContainer').style.display = 'none';
+                document.getElementById('loginContainer').style.display = 'block';
+            }
+        });
+    });
 });
