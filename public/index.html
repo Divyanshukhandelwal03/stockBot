@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Trading Bot - Login & Signup</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Stock Trading Bot</h2>
+
+        <!-- Login Form -->
+        <div id="loginForm" >
+            <h3>Login</h3>
+            <form id="login" method="POST" action="/auth/login">
+                <input type="text" id="loginUsername" name="username" placeholder="Username" required>
+                <input type="password" id="loginPassword" name="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+            <p id="signupLink">Don't have an account? <a id="signUp" style="cursor: pointer;color: blue;">Signup here</a></p>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signupForm" style="display: none;">
+            <h3>Signup</h3>
+            <form id="signup">
+                <input type="text" id="signupUsername" placeholder="Username" required>
+                <input type="password" id="signupPassword" placeholder="Password" required>
+                <button type="submit">Signup</button>
+            </form>
+            <p id="loginLink">Already have an account? <a id="signIn" style="cursor: pointer; color: blue;">Login here</a></p>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" style="display: none;">
+            <h3>Dashboard</h3>
+            <p>Balance: <span id="balance">$0</span></p>
+
+            <h4>Buy Stock</h4>
+            <form id="buyStock">
+                <input type="text" id="stockSymbol" placeholder="Stock Symbol" required>
+                <input type="number" id="stockQuantity" placeholder="Quantity" required>
+                <button type="submit">Buy</button>
+            </form>
+
+            <h4>Sell Stock</h4>
+            <form id="sellStock">
+                <input type="text" id="sellStockSymbol" placeholder="Stock Symbol" required>
+                <input type="number" id="sellStockQuantity" placeholder="Quantity" required>
+                <button type="submit">Sell</button>
+            </form>
+
+            <h4>Portfolio</h4>
+            <ul id="portfolio"></ul>
+        </div>
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+</html>
